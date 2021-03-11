@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+// Removes all files and folders from windows appdata/local/temp folder that are
+// older than 48 hours old (no specific considerations for daylight savings
+// time transitions).
 func main() {
 	tempDir := os.TempDir()
 	fmt.Println(tempDir)
