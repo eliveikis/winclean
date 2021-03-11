@@ -34,9 +34,17 @@ func main() {
 		}
 		fmt.Println("deleting", info.Name())
 		if info.IsDir() {
-			os.RemoveAll(f.Name())
+			err = os.RemoveAll(f.Name())
+			if err != nil {
+				fmt.Println(fmt.Sprintf("error removing dir %s. error: %s", info.Name(), err.Error()))
+				// Continue, try to remove as many as possible.
+			}
 		} else {
-			os.Remove(f.Name())
+			err = os.Remove(f.Name())
+			if err != nil {
+				fmt.Println(fmt.Sprintf("error removing file %s. error: %s", info.Name(), err.Error()))
+				// Continue, try to remove as many as possible.
+			}
 		}
 	}
 }
