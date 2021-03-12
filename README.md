@@ -4,7 +4,10 @@ Looks for files older than 48 hours in the Windows appdata/local/temp folder and
 
 Files that cannot be inspected or removed will show in the output.
 
-A dry run that doesn't actually remove files or directories may be triggered via:
+For verbose output:
 ```
-winclean.exe --dry=true
+winclean.exe --verbose=true
 ```
+
+Add `--dry=true` to only print actions without performing them.
+

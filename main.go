@@ -10,9 +10,9 @@ import (
 )
 
 const separator = string(os.PathSeparator)
-const verbose = false
 
 var isDryRun *bool
+var isVerbose *bool
 
 func removeFile(name string) {
 	var err error
@@ -21,7 +21,7 @@ func removeFile(name string) {
 	}
 	if err != nil {
 		fmt.Println(fmt.Sprintf("error removing file %s. error: %s", name, err.Error()))
-	} else if verbose {
+	} else if *isVerbose {
 		fmt.Println("removed file", name)
 	}
 }
@@ -37,7 +37,7 @@ func cleanFiles(wg *sync.WaitGroup, cutoff time.Time, files []fs.DirEntry, path 
 		// Handle file.
 		if !info.IsDir() {
 			if info.ModTime().After(cutoff) {
-				if verbose {
+				if *isVerbose {
 					fmt.Println("keeping", filename)
 				}
 				continue
@@ -87,6 +87,7 @@ func cleanDir(wg *sync.WaitGroup, cutoff time.Time, path string) {
 func main() {
 	// Parse flags.
 	isDryRun = flag.Bool("dry", false, "A dry run will only print out file removal actions, not perform them.")
+	isVerbose = flag.Bool("verbose", false, "Prints out keep and remove actions.")
 	flag.Parse()
 	if *isDryRun {
 		fmt.Println("--------------------------------------------------------------")
