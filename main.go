@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -13,6 +14,7 @@ const separator = string(os.PathSeparator)
 
 var isDryRun *bool
 var isVerbose *bool
+var numFilesRemoved uint64
 
 func removeFile(name string) {
 	var err error
@@ -21,7 +23,10 @@ func removeFile(name string) {
 	}
 	if err != nil {
 		fmt.Println(fmt.Sprintf("error removing file %s. error: %s", name, err.Error()))
-	} else if *isVerbose {
+		return
+	}
+	atomic.AddUint64(&numFilesRemoved, 1)
+	if *isVerbose {
 		fmt.Println("removed file", name)
 	}
 }
@@ -85,6 +90,9 @@ func cleanDir(wg *sync.WaitGroup, cutoff time.Time, path string) {
 // older than 48 hours old (no specific considerations for daylight savings
 // time transitions).
 func main() {
+	// Allow user to see output before final exit.
+	defer time.Sleep(time.Second * 2)
+
 	// Parse flags.
 	isDryRun = flag.Bool("dry", false, "A dry run will only print out file removal actions, not perform them.")
 	isVerbose = flag.Bool("verbose", false, "Prints out keep and remove actions.")
@@ -111,5 +119,6 @@ func main() {
 	wg.Wait()
 
 	fmt.Println("--------------------------------------------------------------")
+	fmt.Println(fmt.Sprintf("removed %v files", numFilesRemoved))
 	fmt.Println("completed in", time.Now().Sub(startTime))
 }
