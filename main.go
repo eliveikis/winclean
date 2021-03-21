@@ -82,7 +82,7 @@ func cleanDir(wg *sync.WaitGroup, cutoff time.Time, path string) {
 	defer wg.Done()
 	files, err := os.ReadDir(path)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println("unabled to read dir", path, err.Error())
 	}
 	cleanFiles(wg, cutoff, files, path)
 }
