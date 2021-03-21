@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"runtime/debug"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -91,7 +92,15 @@ func cleanDir(wg *sync.WaitGroup, cutoff time.Time, path string) {
 // time transitions).
 func main() {
 	// Allow user to see output before final exit.
-	defer time.Sleep(time.Second * 2)
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("--------------------------------------------------------------")
+			fmt.Println("recovered panic")
+			fmt.Println(r)
+			fmt.Println(string(debug.Stack()))
+		}
+		time.Sleep(time.Second * 2)
+	}()
 
 	// Parse flags.
 	isDryRun = flag.Bool("dry", false, "A dry run will only print out file removal actions, not perform them.")
