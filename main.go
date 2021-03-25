@@ -58,7 +58,9 @@ func cleanFiles(wg *sync.WaitGroup, cutoff time.Time, files []fs.DirEntry, path 
 
 		// Clean sub directory.
 		subPath := path + separator + filename
-		fmt.Println("cleaning sub directory", subPath)
+		if *isVerbose {
+			fmt.Println("cleaning sub directory", subPath)
+		}
 		wg.Add(1)
 		go cleanDir(wg, cutoff, subPath)
 
@@ -78,7 +80,9 @@ func cleanFiles(wg *sync.WaitGroup, cutoff time.Time, files []fs.DirEntry, path 
 			fmt.Println(fmt.Sprintf("error removing dir %s. error: %s", subPath, err.Error()))
 			continue // Clean as much as possible.
 		}
-		fmt.Println("removed dir", subPath)
+		if *isVerbose {
+			fmt.Println("removed dir", subPath)
+		}
 	} // Files.
 }
 
