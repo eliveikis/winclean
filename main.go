@@ -13,8 +13,12 @@ import (
 
 const separator = string(os.PathSeparator)
 
+// Flags.
 var isDryRun *bool
 var isVerbose *bool
+var hours *int64
+
+// State.
 var numFilesRemoved uint64
 
 func removeFile(name string) {
@@ -105,6 +109,7 @@ func main() {
 	// Parse flags.
 	isDryRun = flag.Bool("dry", false, "A dry run will only print out file removal actions, not perform them.")
 	isVerbose = flag.Bool("verbose", false, "Prints out keep and remove actions.")
+	hours = flag.Int64("hours", 72, "Files older than this, in hours, will be removed.")
 	flag.Parse()
 	if *isDryRun {
 		fmt.Println("--------------------------------------------------------------")
@@ -121,7 +126,7 @@ func main() {
 	fmt.Println("cleaning", tempDir)
 
 	startTime := time.Now()
-	cutoff := startTime.Add(-time.Hour * 48)
+	cutoff := startTime.Add(-time.Hour * time.Duration(*hours))
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go cleanDir(&wg, cutoff, ".")
